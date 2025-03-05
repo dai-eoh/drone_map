@@ -57,9 +57,9 @@
 					if (position1) {
 						let positionData1 = JSON.parse(position1.value);
 						const { lat, lng } = positionData1;
-						if (lat1 && lng1 && (!lastPosition1 || lastPosition1.lat !== lat1 || lastPosition1.lng !== lng1)) {
-							droneMap.updateDroneLocation({ lat: lat1, lng: lng1 });
-							lastPosition1 = { lat: lat1, lng: lng1 };
+						if (lat && lng && (!lastPosition1 || lastPosition1.lat !== lat || lastPosition1.lng !== lng)) {
+							droneMap.updateDroneLocation(positionData1);
+							lastPosition1 = positionData1;
 						}
 					}
 				},
