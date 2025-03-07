@@ -1,5 +1,5 @@
 class DroneMap {
-	constructor({ defaultLocation = {}, zoomLevel = 19, droneIcon, onClickMap }) {
+	constructor({ defaultLocation = {}, zoomLevel = 19, droneIcon, onClickMap, onGetSpeedHeight }) {
 		this.currentLocation = defaultLocation;
 		this.zoomLevel = zoomLevel;
 		this.droneIcon = droneIcon;
@@ -12,6 +12,7 @@ class DroneMap {
 		this.routeNumber = 1;
 		this.onClickMap = onClickMap;
 		this.mapData = [];
+		this.onGetSpeedHeight = onGetSpeedHeight;
 		this.initMap();
 	}
 	initMap() {
@@ -102,29 +103,40 @@ class DroneMap {
 		if (!this.settingMode) {
 			return;
 		}
+
+		let height = 0;
+		let speed = 0;
+		if (this.onGetSpeedHeight) {
+			[speed, height] = this.onGetSpeedHeight();
+		}
+		if (!speed || !height) {
+			alert('Please enter speed and height');
+			return;
+		}
+
 		const marker = L.marker(e.latlng, {
 			icon: this.getRouteMarkerIconNumber(),
 			draggable: true,
 		}).addTo(this.routeLayerGroup);
 
 		this.routePolyline.addLatLng(e.latlng);
-		this.routePoints.push(e.latlng);
+
+		this.routePoints.push({ lat: e.latlng.lat.toFixed(6), lng: e.latlng.lng.toFixed(6), speed, height });
 
 		const index = this.routePoints.length - 1;
-		this.updateDataGrid(
-			this.routePoints.map((point, index) => [index + 1, point.lat.toFixed(6), point.lng.toFixed(6)])
-		);
+		this.updateDataGrid();
 		/* Update polyline when marker is dragged */
 		marker.on('dragend', (event) => {
 			const newLatLng = event.target.getLatLng();
-			this.routePoints[index] = newLatLng;
+			this.routePoints[index] = { lat: newLatLng.lat.toFixed(6), lng: newLatLng.lng.toFixed(6), speed, height };
 			this.routePolyline.setLatLngs(this.routePoints);
+			this.updateDataGrid();
 		});
 	}
-	updateDataGrid(data) {
+	updateDataGrid() {
 		this.grid
 			.updateConfig({
-				data,
+				data: this.routePoints.map((point, index) => [index + 1, point.lat, point.lng, point.speed, point.height]),
 			})
 			.forceRender();
 	}

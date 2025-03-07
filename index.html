@@ -188,6 +188,11 @@
 					iconSize: [50, 25],
 					iconAnchor: [25, 25],
 				}),
+				onGetSpeedHeight: () => {
+					const speed = document.getElementById('speed').value || 0;
+					const height = document.getElementById('height').value || 0;
+					return [speed, height];
+				},
 			});
 			const eraWidget = new EraWidget();
 			eraWidget.init({
