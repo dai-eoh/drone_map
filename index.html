@@ -233,7 +233,8 @@
 			});
 			document.getElementById('sendConfigsButton').addEventListener('click', () => {
 				const routePoints = droneMap.getRoutePoints();
-				eraWidget.triggerAction(routePointsAction?.action, JSON.stringify(routePoints));
+				const value = JSON.stringify({ value: routePoints });
+				eraWidget.triggerAction(routePointsAction?.action, value);
 			});
 		</script>
 	</body>
